@@ -1,26 +1,29 @@
 package thj.springbatch.batch.task;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
+@Slf4j
 public class sampleTaskletJob {
-	
-	private static final Logger log = LoggerFactory.getLogger(sampleTaskletJob.class);
-	
-	@Autowired
-	public JobBuilderFactory jobBuilderFactory;
 
-	@Autowired
-	public StepBuilderFactory stepBuilderFactory;
-	
+	// 호출
+	// java -jar batch-process-0.0.1-SNAPSHOT.jar --job.name=sampleTaskletJob
+
+	 JobBuilderFactory jobBuilderFactory;
+	 StepBuilderFactory stepBuilderFactory;
+
+	public sampleTaskletJob(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory ) {
+		this.jobBuilderFactory = jobBuilderFactory;
+		this.stepBuilderFactory = stepBuilderFactory;
+	}
+
 	@Bean
 	public Job sampleTaskletJob() {
 		return jobBuilderFactory.get("sampleTaskletJob")
