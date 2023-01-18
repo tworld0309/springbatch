@@ -1,6 +1,6 @@
 package thj.springbatch.batch.task;
 
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -11,18 +11,38 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 
 @Slf4j
-public class sampleTaskletJob {
+@RequiredArgsConstructor
+public class SampleTasklet {
 
 	// 호출
-	// java -jar batch-process-0.0.1-SNAPSHOT.jar --job.name=sampleTaskletJob
+	// java -jar build/libs/springbatch-1.0.jar --job.name=simpleJob
+	// java -jar build/libs/springbatch-1.0.jar --job.name=sampleTaskletJob
 
-	 JobBuilderFactory jobBuilderFactory;
-	 StepBuilderFactory stepBuilderFactory;
+	public final JobBuilderFactory jobBuilderFactory;
+	public final StepBuilderFactory stepBuilderFactory;
 
-	public sampleTaskletJob(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory ) {
-		this.jobBuilderFactory = jobBuilderFactory;
-		this.stepBuilderFactory = stepBuilderFactory;
+	////// case 1
+	@Bean
+	public Job simpleJob() {
+		log.debug("simpleJob");
+		return jobBuilderFactory.get("simpleJob")
+				.start(simpleStep1())
+				.build();
 	}
+
+	public Step simpleStep1() {
+		log.debug("simpleStep1");
+		return stepBuilderFactory.get("simpleStep1")
+				.tasklet((contribution, chunkContext) -> {
+					log.info(">>>>> This is Step1");
+					return RepeatStatus.FINISHED;
+				})
+				.build();
+	}
+
+
+
+	////// case 2
 
 	@Bean
 	public Job sampleTaskletJob() {
@@ -34,7 +54,6 @@ public class sampleTaskletJob {
 				.build();
 	}
 	
-	@Bean
 	public Step sampleTaskletStep1() {
 		log.info("sampleTaskletStep1");
 		return stepBuilderFactory.get("sampleTaskletStep1")
@@ -47,7 +66,6 @@ public class sampleTaskletJob {
 				.build();
 	}
 	
-	@Bean
 	public Step sampleTaskletStep2() {
 		log.info("sampleTaskletStep2");
 		return stepBuilderFactory.get("sampleTaskletStep2")

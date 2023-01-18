@@ -1,22 +1,23 @@
+server:
+  port: 8090
 
 spring:
-#  datasource:
-#    driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://localhost:3306/springbatch
-#    username: root
-#    password: root
+#  config:
+#    activate:
+#      on-profile: local
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/batch?serverTimezone=Asia/Seoul
+    username: cos
+    password: cos1234
   main:
     allow-bean-definition-overriding: true
   batch:
     job:
       names: ${job.name:NONE}
-            
-mybatis:
-  config-location: classpath:mybatis/mybatis-config.xml
-  mapper-locations: classpath*:mybatis/mariadb/**/*.sqlx
+
 
 ---
 
-spring:
-  profiles: dev
-    
+
