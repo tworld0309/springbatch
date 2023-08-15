@@ -1,37 +1,34 @@
 package thj.springbatch.batch.task.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.configuration.BatchConfigurationException;
-import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
 @Configuration
-@RequiredArgsConstructor
-@EnableBatchProcessing
-public class BatchConfig extends DefaultBatchConfigurer {
+public class BatchConfig {
 
-    private final DataSource configDataSource;
+    @Autowired
+    private DataSource dataSource;
 
-    private final PlatformTransactionManager configTxManager;
+    @Bean
+    public PlatformTransactionManager platformTransactionManager() {
+        return new DataSourceTransactionManager(dataSource);
+    }
 
-    @Override
-    protected JobRepository createJobRepository() throws Exception {
-        JobRepositoryFactoryBean factoryBean = new JobRepositoryFactoryBean();
-        factoryBean.setDataSource(configDataSource);
-        factoryBean.setTransactionManager(configTxManager);
-        factoryBean.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED");
-        factoryBean.setTablePrefix("BATCH_");
-        try {
-            factoryBean.afterPropertiesSet();
-            return factoryBean.getObject();
-        } catch (Exception e) {
-            throw new BatchConfigurationException(e);
-        }
+    @Bean
+    public JobRepository testJobRepository() throws Exception {
+        JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
+        factory.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED");  // !! 중요
+        factory.setDataSource(dataSource);
+        //factory.setDatabaseType("POSTGRES");
+        factory.afterPropertiesSet();
+        return factory.getObject();
     }
 }
